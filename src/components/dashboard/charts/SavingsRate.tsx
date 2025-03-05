@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -17,6 +17,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  ReferenceLine,
+  Area,
+  ComposedChart,
 } from "recharts";
 import { cn } from "@/lib/utils";
 import { Info } from "lucide-react";
@@ -167,17 +170,58 @@ interface ChartViewProps {
 }
 
 const ChartView = ({ data, comparisonData, view }: ChartViewProps) => {
+  // Custom tooltip formatter
+  const CustomTooltip = useCallback(
+    ({ active, payload, label }: any) => {
+      if (active && payload && payload.length) {
+        return (
+          <div className="bg-white p-3 border rounded-md shadow-md">
+            <p className="font-medium text-sm mb-1">
+              {view === "yearly" ? label : `Day ${label}`}
+            </p>
+            {payload.map((entry: any, index: number) => (
+              <div key={`tooltip-${index}`} className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: entry.color }}
+                />
+                <p className="text-sm">
+                  <span className="font-medium">{entry.name}:</span>{" "}
+                  <span>{entry.value}%</span>
+                </p>
+              </div>
+            ))}
+          </div>
+        );
+      }
+      return null;
+    },
+    [view],
+  );
+
   return (
     <div className="w-full h-[220px]">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart
+        <ComposedChart
           data={data}
           margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <defs>
+            <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#f0f0f0"
+            vertical={false}
+          />
           <XAxis
             dataKey="date"
             tick={{ fontSize: 12 }}
+            axisLine={false}
+            tickLine={false}
             tickFormatter={(value) => {
               if (view === "yearly") return value;
               return value;
@@ -186,36 +230,53 @@ const ChartView = ({ data, comparisonData, view }: ChartViewProps) => {
           <YAxis
             tick={{ fontSize: 12 }}
             tickFormatter={(value) => `${value}%`}
+            axisLine={false}
+            tickLine={false}
+            domain={[0, "dataMax + 5"]}
           />
-          <Tooltip
-            formatter={(value) => [`${value}%`, "Savings Rate"]}
-            labelFormatter={(label) => {
-              if (view === "yearly") return `${label}`;
-              return `Day ${label}`;
-            }}
+          <Tooltip content={CustomTooltip} />
+          <Legend
+            verticalAlign="top"
+            height={36}
+            iconType="circle"
+            iconSize={8}
+            formatter={(value) => (
+              <span className="text-sm font-medium">{value}</span>
+            )}
           />
-          <Legend />
 
           {/* Target line */}
           {data[0]?.target && (
-            <Line
-              type="monotone"
-              dataKey="target"
+            <ReferenceLine
+              y={data[0].target}
               stroke="#22c55e"
               strokeWidth={2}
-              dot={false}
-              activeDot={false}
-              name="Target"
+              strokeDasharray="3 3"
+              label={{
+                value: `Target: ${data[0].target}%`,
+                position: "right",
+                fill: "#22c55e",
+                fontSize: 12,
+              }}
             />
           )}
+
+          {/* Area under current period line */}
+          <Area
+            type="monotone"
+            dataKey="savingsRate"
+            fill="url(#colorSavings)"
+            stroke="none"
+            animationDuration={1500}
+          />
 
           {/* Current period line */}
           <Line
             type="monotone"
             dataKey="savingsRate"
             stroke="#3b82f6"
-            strokeWidth={2}
-            dot={{ r: 4, strokeWidth: 2 }}
+            strokeWidth={3}
+            dot={{ r: 4, strokeWidth: 2, fill: "#fff" }}
             activeDot={{ r: 6, strokeWidth: 2 }}
             name="Current Period"
             animationDuration={1500}
@@ -230,13 +291,13 @@ const ChartView = ({ data, comparisonData, view }: ChartViewProps) => {
               stroke="#9ca3af"
               strokeWidth={2}
               strokeDasharray="5 5"
-              dot={{ r: 3 }}
+              dot={{ r: 3, fill: "#fff" }}
               activeDot={{ r: 5 }}
               name="Previous Period"
               animationDuration={1500}
             />
           )}
-        </LineChart>
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );

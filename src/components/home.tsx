@@ -7,10 +7,18 @@ import MonthlySummary from "./dashboard/MonthlySummary";
 import TransactionList from "./dashboard/TransactionList";
 import BudgetTracker from "./dashboard/BudgetTracker";
 import NotificationCenter from "./dashboard/NotificationCenter";
+import FinancialGoals from "./dashboard/FinancialGoals";
+import QuickActions from "./dashboard/QuickActions";
+import AddTransactionForm from "./transactions/AddTransactionForm";
+import AddAccountForm from "./accounts/AddAccountForm";
 
 const Home: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState("May 2023");
+  const [showAddTransactionForm, setShowAddTransactionForm] = useState(false);
+  const [showAddAccountForm, setShowAddAccountForm] = useState(false);
+  const [showAddBudgetForm, setShowAddBudgetForm] = useState(false);
+  const [showAddGoalDialog, setShowAddGoalDialog] = useState(false);
 
   const handleNotificationClick = () => {
     setShowNotifications(!showNotifications);
@@ -30,6 +38,12 @@ const Home: React.FC = () => {
       />
 
       <main className="container mx-auto px-4 py-6 space-y-8">
+        <QuickActions
+          onAddTransaction={() => setShowAddTransactionForm(true)}
+          onAddAccount={() => setShowAddAccountForm(true)}
+          onAddBudget={() => setShowAddBudgetForm(true)}
+          onAddGoal={() => setShowAddGoalDialog(true)}
+        />
         <AccountCards />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -43,6 +57,8 @@ const Home: React.FC = () => {
 
           <div className="space-y-8">
             <BudgetTracker month={selectedMonth} />
+
+            <FinancialGoals />
 
             <div className="lg:block">
               <AnimatePresence>
@@ -84,6 +100,29 @@ const Home: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* Modals */}
+      {showAddTransactionForm && (
+        <AddTransactionForm
+          open={showAddTransactionForm}
+          onOpenChange={setShowAddTransactionForm}
+          onAddTransaction={(transaction) => {
+            console.log("New transaction:", transaction);
+            setShowAddTransactionForm(false);
+          }}
+        />
+      )}
+
+      {showAddAccountForm && (
+        <AddAccountForm
+          open={showAddAccountForm}
+          onOpenChange={setShowAddAccountForm}
+          onAddAccount={(account) => {
+            console.log("New account:", account);
+            setShowAddAccountForm(false);
+          }}
+        />
+      )}
     </div>
   );
 };

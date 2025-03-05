@@ -139,39 +139,75 @@ const MonthlySummary: React.FC<MonthlySummaryProps> = ({
 
         <TabsContent value="all" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <SpendingByCategory period={selectedMonth} />
-            <IncomeVsExpenses />
-            <SavingsRate currentMonth={selectedMonth} />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <SpendingByCategory period={selectedMonth} />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <IncomeVsExpenses />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <SavingsRate currentMonth={selectedMonth} />
+            </motion.div>
           </div>
         </TabsContent>
 
         <TabsContent value="spending">
-          <Card>
-            <CardContent className="pt-6">
-              <SpendingByCategory
-                period={selectedMonth}
-                title={`Spending by Category - ${selectedMonth}`}
-              />
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card>
+              <CardContent className="pt-6">
+                <SpendingByCategory
+                  period={selectedMonth}
+                  title={`Spending by Category - ${selectedMonth}`}
+                />
+              </CardContent>
+            </Card>
+          </motion.div>
         </TabsContent>
 
         <TabsContent value="income">
-          <Card>
-            <CardContent className="pt-6">
-              <IncomeVsExpenses
-                title={`Income vs Expenses - ${selectedMonth}`}
-              />
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card>
+              <CardContent className="pt-6">
+                <IncomeVsExpenses
+                  title={`Income vs Expenses - ${selectedMonth}`}
+                />
+              </CardContent>
+            </Card>
+          </motion.div>
         </TabsContent>
 
         <TabsContent value="savings">
-          <Card>
-            <CardContent className="pt-6">
-              <SavingsRate currentMonth={selectedMonth} />
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card>
+              <CardContent className="pt-6">
+                <SavingsRate currentMonth={selectedMonth} />
+              </CardContent>
+            </Card>
+          </motion.div>
         </TabsContent>
       </Tabs>
 

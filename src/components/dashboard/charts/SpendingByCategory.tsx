@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   PieChart,
@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
   Tooltip,
   Legend,
+  Sector,
 } from "recharts";
 import { Info } from "lucide-react";
 
@@ -58,6 +59,76 @@ const SpendingByCategory = ({
     setHoveredCategory(null);
   };
 
+  // Active shape for enhanced pie chart segments
+  const renderActiveShape = useCallback((props: any) => {
+    const {
+      cx,
+      cy,
+      innerRadius,
+      outerRadius,
+      startAngle,
+      endAngle,
+      fill,
+      payload,
+      percent,
+      value,
+    } = props;
+
+    return (
+      <g>
+        <text
+          x={cx}
+          y={cy}
+          dy={-20}
+          textAnchor="middle"
+          fill={fill}
+          className="text-sm font-medium"
+        >
+          {payload.name}
+        </text>
+        <text
+          x={cx}
+          y={cy}
+          dy={0}
+          textAnchor="middle"
+          fill="#333"
+          className="text-lg font-bold"
+        >
+          ${value.toLocaleString()}
+        </text>
+        <text
+          x={cx}
+          y={cy}
+          dy={20}
+          textAnchor="middle"
+          fill="#999"
+          className="text-xs"
+        >
+          {(percent * 100).toFixed(1)}%
+        </text>
+        <Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius}
+          outerRadius={outerRadius + 10}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          fill={fill}
+          opacity={0.8}
+        />
+        <Sector
+          cx={cx}
+          cy={cy}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          innerRadius={outerRadius + 12}
+          outerRadius={outerRadius + 14}
+          fill={fill}
+        />
+      </g>
+    );
+  }, []);
+
   const totalSpending = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
@@ -91,6 +162,10 @@ const SpendingByCategory = ({
                 dataKey="value"
                 onMouseEnter={handlePieEnter}
                 onMouseLeave={handlePieLeave}
+                activeIndex={activeIndex !== null ? activeIndex : undefined}
+                activeShape={renderActiveShape}
+                animationBegin={0}
+                animationDuration={800}
               >
                 {data.map((entry, index) => (
                   <Cell
@@ -128,6 +203,9 @@ const SpendingByCategory = ({
                 verticalAlign="bottom"
                 align="center"
                 wrapperStyle={{ paddingTop: "20px" }}
+                formatter={(value) => (
+                  <span className="text-xs font-medium">{value}</span>
+                )}
               />
             </PieChart>
           </ResponsiveContainer>

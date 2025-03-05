@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -17,6 +17,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Cell,
+  LabelList,
 } from "recharts";
 import { motion } from "framer-motion";
 
@@ -79,14 +81,44 @@ const IncomeVsExpenses: React.FC<IncomeVsExpensesProps> = ({
                 data={filteredData}
                 margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
               >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip
-                  formatter={(value) => [`$${value}`, undefined]}
-                  labelFormatter={(label) => `Month: ${label}`}
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#f0f0f0"
                 />
-                <Legend />
+                <XAxis
+                  dataKey="month"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12 }}
+                  tickFormatter={(value) => `${value}`}
+                />
+                <Tooltip
+                  formatter={(value) => [
+                    `${value.toLocaleString()}`,
+                    undefined,
+                  ]}
+                  labelFormatter={(label) => `Month: ${label}`}
+                  contentStyle={{
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                    border: "1px solid #f0f0f0",
+                  }}
+                />
+                <Legend
+                  verticalAlign="top"
+                  height={36}
+                  iconType="circle"
+                  iconSize={8}
+                  formatter={(value) => (
+                    <span className="text-sm font-medium">{value}</span>
+                  )}
+                />
                 <Bar
                   dataKey="income"
                   name="Income"
@@ -94,7 +126,15 @@ const IncomeVsExpenses: React.FC<IncomeVsExpensesProps> = ({
                   radius={[4, 4, 0, 0]}
                   animationDuration={1000}
                   animationBegin={0}
-                />
+                  barSize={30}
+                >
+                  <LabelList
+                    dataKey="income"
+                    position="top"
+                    formatter={(value) => `${value.toLocaleString()}`}
+                    style={{ fontSize: "10px", fill: "#4ade80" }}
+                  />
+                </Bar>
                 <Bar
                   dataKey="expenses"
                   name="Expenses"
@@ -102,7 +142,15 @@ const IncomeVsExpenses: React.FC<IncomeVsExpensesProps> = ({
                   radius={[4, 4, 0, 0]}
                   animationDuration={1000}
                   animationBegin={300}
-                />
+                  barSize={30}
+                >
+                  <LabelList
+                    dataKey="expenses"
+                    position="top"
+                    formatter={(value) => `${value.toLocaleString()}`}
+                    style={{ fontSize: "10px", fill: "#f87171" }}
+                  />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </TabsContent>
@@ -112,14 +160,44 @@ const IncomeVsExpenses: React.FC<IncomeVsExpensesProps> = ({
                 data={filteredData}
                 margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
               >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip
-                  formatter={(value) => [`$${value}`, undefined]}
-                  labelFormatter={(label) => `Month: ${label}`}
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#f0f0f0"
                 />
-                <Legend />
+                <XAxis
+                  dataKey="month"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12 }}
+                  tickFormatter={(value) => `${value}`}
+                />
+                <Tooltip
+                  formatter={(value) => [
+                    `${value.toLocaleString()}`,
+                    undefined,
+                  ]}
+                  labelFormatter={(label) => `Month: ${label}`}
+                  contentStyle={{
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                    border: "1px solid #f0f0f0",
+                  }}
+                />
+                <Legend
+                  verticalAlign="top"
+                  height={36}
+                  iconType="circle"
+                  iconSize={8}
+                  formatter={(value) => (
+                    <span className="text-sm font-medium">{value}</span>
+                  )}
+                />
                 <Bar
                   dataKey="income"
                   name="Income"
@@ -128,7 +206,19 @@ const IncomeVsExpenses: React.FC<IncomeVsExpensesProps> = ({
                   radius={[4, 4, 0, 0]}
                   animationDuration={1000}
                   animationBegin={0}
-                />
+                  barSize={40}
+                >
+                  <LabelList
+                    dataKey="income"
+                    position="insideTop"
+                    formatter={(value) => `${value.toLocaleString()}`}
+                    style={{
+                      fontSize: "10px",
+                      fill: "#fff",
+                      fontWeight: "bold",
+                    }}
+                  />
+                </Bar>
                 <Bar
                   dataKey="expenses"
                   name="Expenses"
@@ -137,7 +227,19 @@ const IncomeVsExpenses: React.FC<IncomeVsExpensesProps> = ({
                   radius={[4, 4, 0, 0]}
                   animationDuration={1000}
                   animationBegin={300}
-                />
+                  barSize={40}
+                >
+                  <LabelList
+                    dataKey="expenses"
+                    position="insideBottom"
+                    formatter={(value) => `${value.toLocaleString()}`}
+                    style={{
+                      fontSize: "10px",
+                      fill: "#fff",
+                      fontWeight: "bold",
+                    }}
+                  />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </TabsContent>
